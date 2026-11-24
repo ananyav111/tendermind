@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TenderMind — AI-Powered Government Tender & Eligibility Intelligence</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              500: '#14b8a6',
+              600: '#0d9488',
+              900: '#134e4a'
+            },
+            dark: {
+              950: '#06090f',
+              900: '#0d1117',
+              850: '#111722',
+              800: '#161f2e',
+              700: '#212c40',
+              600: '#303e54'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-dark-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-teal-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="h-16 border-b border-dark-700/70 bg-dark-900/90 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 via-cyan-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-teal-500/20">
+        <i data-lucide="shield-check" class="w-6 h-6 text-dark-950 stroke-[2.5]"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-cyan-200 to-indigo-300">TenderMind</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/30">MCP + Agentic AI</span>
+        </div>
+        <p class="text-xs text-slate-400">Government Tender & MSME Eligibility Intelligence</p>
+      </div>
+    </div>
+
+    <!-- Active Profile Pill -->
+    <div class="hidden md:flex items-center gap-4 text-xs">
+      <div class="flex items-center gap-2 bg-dark-800 border border-dark-700 px-3 py-1.5 rounded-lg">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-300 font-medium">Enterprise:</span>
+        <span class="text-white font-semibold" id="topCompanyBadge">Nexus Technology Solutions (MSE)</span>
+      </div>
+      <div class="flex items-center gap-2 bg-dark-800 border border-dark-700 px-3 py-1.5 rounded-lg">
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span class="text-slate-400 font-mono">7 MCP Servers Active</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button onclick="switchTab('tab-agent-chat')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs transition shadow-md shadow-teal-500/25">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>AI Copilot</span>
+      </button>
+      <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 border border-dark-700 px-2.5 py-1.5 rounded-lg bg-dark-850">
+        <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
+        <span>OpenAPI</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Shell -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 border-r border-dark-700/60 bg-dark-900/60 p-4 flex flex-col gap-1 shrink-0 overflow-y-auto">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 py-2">Workspace Navigation</div>
+      
+      <button onclick="switchTab('tab-command-center')" id="nav-command-center" class="nav-btn active">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>RFP Command Center</span>
+      </button>
+
+      <button onclick="switchTab('tab-discovery')" id="nav-discovery" class="nav-btn">
+        <i data-lucide="search" class="w-4 h-4"></i>
+        <span>Tender Discovery</span>
+      </button>
+
+      <button onclick="switchTab('tab-document-intelligence')" id="nav-document-intelligence" class="nav-btn">
+        <i data-lucide="file-text" class="w-4 h-4"></i>
+        <span>Tender Intelligence</span>
+      </button>
+
+      <button onclick="switchTab('tab-company-profile')" id="nav-company-profile" class="nav-btn">
+        <i data-lucide="building-2" class="w-4 h-4"></i>
+        <span>Business Vault & MSME</span>
+      </button>
+
+      <button onclick="switchTab('tab-eligibility')" id="nav-eligibility" class="nav-btn">
+        <i data-lucide="git-compare" class="w-4 h-4"></i>
+        <span>Eligibility & Gap Engine</span>
+      </button>
+
+      <button onclick="switchTab('tab-bid-preparation')" id="nav-bid-preparation" class="nav-btn">
+        <i data-lucide="check-square" class="w-4 h-4"></i>
+        <span>Bid Preparation (5/9)</span>
+      </button>
+
+      <button onclick="switchTab('tab-corrigenda')" id="nav-corrigenda" class="nav-btn">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center gap-2">
+            <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+            <span>Corrigenda & Dates</span>
+          </div>
+          <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30">2 New</span>
+        </div>
+      </button>
+
+      <button onclick="switchTab('tab-agent-activity')" id="nav-agent-activity" class="nav-btn">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+            <span>AI Agent Activity (MCP)</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        </div>
+      </button>
+
+      <button onclick="switchTab('tab-agent-chat')" id="nav-agent-chat" class="nav-btn">
+        <div class="flex items-center gap-2">
+          <i data-lucide="message-square" class="w-4 h-4 text-teal-400"></i>
+          <span>The "Killer Moment"</span>
+        </div>
+      </button>
+
+      <div class="mt-auto pt-4 border-t border-dark-800 text-xs text-slate-400">
+        <div class="bg-dark-850 p-3 rounded-xl border border-dark-700/50 space-y-2">
+          <div class="flex items-center justify-between font-semibold text-slate-300">
+            <span>MSME Benefit Shield</span>
+            <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <p class="text-[11px] leading-relaxed text-slate-400">
+            GFR Rule 170 active: EMD & Tender Fee 100% Waived for registered MSEs.
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 bg-dark-950/70">
+      
+      <!-- SCREEN 1: RFP COMMAND CENTER (Blueprint Page 1 & 10) -->
+      <section id="tab-command-center" class="tab-panel active space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <div class="flex items-center gap-2 text-teal-400 text-xs font-semibold uppercase tracking-wider">
+              <i data-lucide="radar" class="w-4 h-4"></i>
+              <span>Live Procurement Operations</span>
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-tight mt-1">RFP Command Center</h1>
+            <p class="text-xs text-slate-400">AI-Powered. Accurate. Submission-Ready.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="resolveGapDemo()" id="btnDemoResolve" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center gap-2 transition shadow-lg shadow-indigo-600/30">
+              <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+              <span>Resolve Completion Cert Gap</span>
+            </button>
+            <button onclick="runFullPipeline()" class="px-3.5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs flex items-center gap-2 transition shadow-lg shadow-teal-500/20">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>Run Multi-Agent Pipeline</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hero Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Requirements Extracted -->
+          <div class="stat-card">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-medium uppercase tracking-wider">Requirements Extracted</span>
+              <i data-lucide="binary" class="w-4 h-4 text-teal-400"></i>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold text-white font-mono" id="statReqPct">98%</span>
+              <span class="text-xs text-emerald-400 font-medium">Extracted & Linked</span>
+            </div>
+            <div class="w-full bg-dark-700 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-teal-400 h-full rounded-full" style="width: 98%"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-400 flex justify-between">
+              <span>Mandatory: 124 clauses</span>
+              <span>Commercial: 57</span>
+            </div>
+          </div>
+
+          <!-- Submission Readiness -->
+          <div class="stat-card">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-medium uppercase tracking-wider">Submission Readiness</span>
+              <i data-lucide="gauge" class="w-4 h-4 text-cyan-400"></i>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold text-cyan-300 font-mono" id="statReadiness">86%</span>
+              <span class="text-xs text-amber-400 font-medium" id="statReadinessLabel">1 Missing Doc</span>
+            </div>
+            <div class="w-full bg-dark-700 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-cyan-400 h-full rounded-full transition-all duration-500" id="statReadinessBar" style="width: 86%"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-400 flex justify-between">
+              <span>Target: GEM/2026/B/123456</span>
+              <span class="text-teal-400">Ready in 2 steps</span>
+            </div>
+          </div>
+
+          <!-- Documents Check -->
+          <div class="stat-card">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-medium uppercase tracking-wider">Documents Check</span>
+              <i data-lucide="folder-check" class="w-4 h-4 text-indigo-400"></i>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold text-white font-mono" id="statDocsCount">6 / 7</span>
+              <span class="text-xs text-slate-400 font-medium">Verified Dossier</span>
+            </div>
+            <div class="w-full bg-dark-700 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-indigo-400 h-full rounded-full" id="statDocsBar" style="width: 85%"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-400 flex justify-between">
+              <span class="text-emerald-400">Uploaded: 6</span>
+              <span class="text-rose-400" id="statMissingDocsText">Missing: 1</span>
+            </div>
+          </div>
+
+          <!-- Corrigenda & Risks -->
+          <div class="stat-card">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-medium uppercase tracking-wider">Active Corrigenda & Risks</span>
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold text-amber-400 font-mono">2</span>
+              <span class="text-xs text-slate-300 font-medium">Amendments Detected</span>
+            </div>
+            <div class="w-full bg-dark-700 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-amber-400 h-full rounded-full" style="width: 60%"></div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-400 flex justify-between">
+              <span>Deadline extended: +5 days</span>
+              <span class="text-emerald-400">EMD 100% Waived</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Interactive Split View -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Active Target Tender Dossier -->
+          <div class="lg:col-span-2 bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-dark-800 pb-4">
+              <div>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-dark-800 text-teal-400 border border-teal-500/20">TARGET RFP</span>
+                <h2 class="text-lg font-bold text-white mt-1" id="dashTenderTitle">GEM/2026/B/123456 — Comprehensive Annual Maintenance & Cloud Solutions</h2>
+                <p class="text-xs text-slate-400" id="dashTenderDept">Department of Administrative Reforms & Public Grievances</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-400">Estimated Value</span>
+                <p class="text-lg font-mono font-bold text-teal-300" id="dashTenderValue">₹25,00,000</p>
+              </div>
+            </div>
+
+            <!-- Timeline & Key Dates -->
+            <div class="grid grid-cols-3 gap-3 text-xs bg-dark-850 p-3.5 rounded-xl border border-dark-700/60">
+              <div>
+                <span class="text-slate-400 text-[11px]">Submission Deadline</span>
+                <p class="font-bold text-white mt-0.5" id="dashTenderDeadline">15 Dec 2026, 15:00 IST</p>
+                <span class="text-[10px] text-amber-400">Extended via Corrigendum #1</span>
+              </div>
+              <div>
+                <span class="text-slate-400 text-[11px]">Pre-Bid Meeting</span>
+                <p class="font-bold text-white mt-0.5">05 Dec 2026, 11:00 IST</p>
+                <span class="text-[10px] text-slate-400">Online VC Link Provided</span>
+              </div>
+              <div>
+                <span class="text-slate-400 text-[11px]">EMD Exemption</span>
+                <p class="font-bold text-emerald-400 mt-0.5">₹50,000 Exempted</p>
+                <span class="text-[10px] text-teal-400">GFR Rule 170 Applicable</span>
+              </div>
+            </div>
+
+            <!-- Requirement-by-Requirement Table Snapshot -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-400 font-semibold px-1">
+                <span>Core Qualification Conditions</span>
+                <span>Deterministic Evidence Status</span>
+              </div>
+
+              <div id="dashRequirementsList" class="space-y-2">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Agent Engine & Immediate Actions -->
+          <div class="space-y-6">
+            <!-- Killer Moment Card -->
+            <div class="bg-gradient-to-br from-dark-900 via-dark-850 to-teal-950/40 border border-teal-500/30 rounded-2xl p-5 space-y-3">
+              <div class="flex items-center gap-2 text-teal-400">
+                <i data-lucide="help-circle" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">The Killer Question</span>
+              </div>
+              <h3 class="text-sm font-semibold text-white leading-snug">"Can my company apply for this tender? What exactly is preventing us?"</h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                TenderMind verifies deterministic clauses against audited company records and reveals exact missing evidence.
+              </p>
+              <button onclick="askKillerQuestion()" class="w-full py-2.5 px-4 rounded-xl bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-teal-500/20">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                <span>Ask Agent in 1-Click</span>
+              </button>
+            </div>
+
+            <!-- Action Required Alert -->
+            <div class="bg-rose-950/30 border border-rose-500/30 rounded-2xl p-5 space-y-3" id="dashGapCard">
+              <div class="flex items-center gap-2 text-rose-400">
+                <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Identified Blocking Gap</span>
+              </div>
+              <p class="text-xs text-slate-200 font-medium">
+                Missing: <strong class="text-white">Client Completion Certificate</strong> (>₹10 Lakh).
+              </p>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                Cited in Page 14, Section 5.1. While past work order is present, the formal completion sign-off is unverified.
+              </p>
+              <button onclick="resolveGapDemo()" class="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition">
+                Simulate Uploading Completion Cert
+              </button>
+            </div>
+
+            <!-- MSME Optimizer Box -->
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-5 space-y-2">
+              <div class="flex items-center justify-between text-xs text-amber-400 font-bold">
+                <span>MSME Opportunity Optimizer</span>
+                <i data-lucide="sparkle" class="w-4 h-4"></i>
+              </div>
+              <p class="text-xs text-slate-300">
+                Nexus Tech qualifies for <span class="text-emerald-400 font-semibold">100% EMD waiver</span> under Public Procurement Policy for MSEs 2012.
+              </p>
+              <div class="text-[11px] font-mono text-slate-400 bg-dark-850 p-2.5 rounded-lg border border-dark-700">
+                Savings: ₹50,000 EMD + ₹1,000 Fee
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: TENDER DISCOVERY (Blueprint Page 3 & 16) -->
+      <section id="tab-discovery" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Intelligent Tender Discovery</h1>
+            <p class="text-xs text-slate-400">Multi-source automated tender ingestion from GeM, CPPP, and state procurement portals.</p>
+          </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-5 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label class="text-[11px] font-medium text-slate-400">Search Keywords</label>
+              <input type="text" id="filterQuery" placeholder="e.g. software, cloud, IoT, grievance" class="w-full mt-1 bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-400">
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-slate-400">Business Sector</label>
+              <select id="filterCategory" class="w-full mt-1 bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-400">
+                <option value="all">All Sectors</option>
+                <option value="IT Services" selected>IT Services & Cloud</option>
+                <option value="Civil Construction">Civil Construction</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-slate-400">Location</label>
+              <input type="text" id="filterLocation" placeholder="e.g. Karnataka, Delhi" class="w-full mt-1 bg-dark-800 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-400">
+            </div>
+            <div class="flex items-end">
+              <button onclick="loadTenders()" class="w-full py-2 px-4 rounded-lg bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs transition flex items-center justify-center gap-2">
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>Filter Opportunities</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tenders List -->
+        <div id="tendersContainer" class="space-y-4">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- SCREEN 3: TENDER INTELLIGENCE & CITATIONS (Blueprint Page 4, 5, 17) -->
+      <section id="tab-document-intelligence" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Tender Document Intelligence</h1>
+            <p class="text-xs text-slate-400">Clause-level extraction with verbatim page and section citations.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Inspecting Tender:</span>
+            <span class="font-mono text-xs font-semibold text-teal-300 bg-dark-800 px-2.5 py-1 rounded border border-dark-700" id="activeIntelTenderId">GEM/2026/B/123456</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-4">
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-5">
+              <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                <i data-lucide="book-open" class="w-4 h-4 text-teal-400"></i>
+                <span>Extracted Tender Clauses with Page-Level Source Citations</span>
+              </h2>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="text-slate-400 border-b border-dark-800 text-[11px] uppercase">
+                    <tr>
+                      <th class="py-2.5 px-3">Requirement</th>
+                      <th class="py-2.5 px-3">Tender Specification</th>
+                      <th class="py-2.5 px-3">Source Citation</th>
+                      <th class="py-2.5 px-3">MSME Relaxable</th>
+                    </tr>
+                  </thead>
+                  <tbody id="intelClausesBody" class="divide-y divide-dark-800 text-slate-200">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-5 space-y-3">
+              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="file-check" class="w-4 h-4 text-cyan-400"></i>
+                <span>Tender Document Specs</span>
+              </h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between py-1 border-b border-dark-800">
+                  <span class="text-slate-400">Portal Source:</span>
+                  <span class="font-medium text-white" id="intelPortal">GeM</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-dark-800">
+                  <span class="text-slate-400">Tender Value:</span>
+                  <span class="font-mono text-teal-300 font-bold" id="intelValue">₹25,00,000</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-dark-800">
+                  <span class="text-slate-400">EMD:</span>
+                  <span class="text-white" id="intelEmd">₹50,000 (MSE Exempt)</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-dark-800">
+                  <span class="text-slate-400">Closing Date:</span>
+                  <span class="text-amber-400 font-semibold" id="intelDeadline">15 Dec 2026</span>
+                </div>
+              </div>
+              <div class="pt-2">
+                <a id="intelDocLink" href="https://gem.gov.in" target="_blank" class="w-full py-2 px-3 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-slate-300 hover:text-white text-xs flex items-center justify-center gap-2 transition">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  <span>Open Official Document URL</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: BUSINESS VAULT & MSME PROFILE (Blueprint Page 5 & 6) -->
+      <section id="tab-company-profile" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Business Intelligence Profile & Document Vault</h1>
+            <p class="text-xs text-slate-400">Verified company credentials, Udyam MSME status, and document repository.</p>
+          </div>
+          <button onclick="resolveGapDemo()" class="px-3.5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs flex items-center gap-2 transition">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Upload Document to Vault</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Company Info Card -->
+          <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                NT
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-base" id="profName">Nexus Technology Solutions</h3>
+                <span class="text-xs text-teal-400 font-mono" id="profType">Private Limited • Micro Enterprise</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xs border-t border-dark-800 pt-3">
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">Location:</span>
+                <span class="text-white font-medium" id="profLocation">Bengaluru, Karnataka</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">Udyam Registration:</span>
+                <span class="font-mono text-cyan-300 font-semibold" id="profUdyam">UDYAM-KR-03-0098472</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">GSTIN:</span>
+                <span class="font-mono text-white" id="profGstin">29AABCU9603R1ZM</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">PAN:</span>
+                <span class="font-mono text-white" id="profPan">AABCU9603R</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">Operational Experience:</span>
+                <span class="text-white font-medium" id="profExp">4 Years</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span class="text-slate-400">3-Year Avg Turnover:</span>
+                <span class="font-mono text-teal-300 font-bold" id="profTurnover">₹34,66,667</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Document Repository Table -->
+          <div class="lg:col-span-2 bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i data-lucide="archive" class="w-4 h-4 text-indigo-400"></i>
+                <span>Document Repository & Expiry Tracking</span>
+              </span>
+              <span class="text-xs text-slate-400 font-normal">Audited & Hash Verified</span>
+            </h3>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="text-slate-400 border-b border-dark-800 text-[11px] uppercase">
+                  <tr>
+                    <th class="py-2 px-3">Document</th>
+                    <th class="py-2 px-3">Status</th>
+                    <th class="py-2 px-3">Issuing Authority / UDIN</th>
+                    <th class="py-2 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="profDocsBody" class="divide-y divide-dark-800">
+                  <!-- Dynamic -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: ELIGIBILITY & GAP ENGINE (Blueprint Page 6 & 7) -->
+      <section id="tab-eligibility" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Intelligent Eligibility & Gap Engine</h1>
+            <p class="text-xs text-slate-400">Deterministic 3-State Evaluation: Satisfied, Not Satisfied, or Needs Verification.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400">Overall Status:</span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold" id="eligVerdictBadge">ANALYZING...</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div class="stat-card">
+            <span class="text-xs text-slate-400 font-medium">Readiness Index</span>
+            <p class="text-3xl font-mono font-bold text-white mt-1" id="eligReadinessScore">--%</p>
+          </div>
+          <div class="stat-card">
+            <span class="text-xs text-emerald-400 font-medium">Satisfied Conditions</span>
+            <p class="text-3xl font-mono font-bold text-emerald-400 mt-1" id="eligSatisfiedCount">--</p>
+          </div>
+          <div class="stat-card">
+            <span class="text-xs text-rose-400 font-medium">Not Satisfied (Gaps)</span>
+            <p class="text-3xl font-mono font-bold text-rose-400 mt-1" id="eligNotSatisfiedCount">--</p>
+          </div>
+          <div class="stat-card">
+            <span class="text-xs text-amber-400 font-medium">Needs Verification</span>
+            <p class="text-3xl font-mono font-bold text-amber-400 mt-1" id="eligNeedsVerCount">--</p>
+          </div>
+        </div>
+
+        <!-- Detailed Assessment Table -->
+        <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+          <h3 class="text-sm font-bold text-white">Requirement-by-Requirement Evidence Comparison</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-dark-800 text-[11px] uppercase">
+                <tr>
+                  <th class="py-2.5 px-3">Clause & Source Citation</th>
+                  <th class="py-2.5 px-3">Tender Condition</th>
+                  <th class="py-2.5 px-3">Verified Company Evidence</th>
+                  <th class="py-2.5 px-3">Outcome</th>
+                </tr>
+              </thead>
+              <tbody id="eligAssessmentsBody" class="divide-y divide-dark-800 text-slate-200">
+                <!-- Dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Blocking Gaps Resolution Section -->
+        <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4" id="eligGapsSection">
+          <h3 class="text-sm font-bold text-rose-400 flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            <span>Actionable Resolution Plan for Identified Gaps</span>
+          </h3>
+          <div id="eligGapsList" class="space-y-3">
+            <!-- Dynamic -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 6: BID PREPARATION WORKSPACE (Blueprint Page 7 & 8) -->
+      <section id="tab-bid-preparation" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Bid Preparation Agent Workspace</h1>
+            <p class="text-xs text-slate-400">Generate compliance checklists, draft criterion-aligned proposals, and statutory declarations.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400">Checklist Readiness:</span>
+            <span class="font-mono text-sm font-bold text-teal-300 bg-dark-800 px-3 py-1 rounded-lg border border-dark-700" id="bidFractionBadge">5 / 9 Ready</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- 5/9 Checklist Column -->
+          <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center justify-between">
+              <span>Bid Preparation Checklist</span>
+              <span class="text-xs text-teal-400 font-mono" id="bidCountSummary">5/9 Completed</span>
+            </h3>
+            <div id="bidChecklistItems" class="space-y-2">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Proposal & Undertakings Editor -->
+          <div class="lg:col-span-2 space-y-6">
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+              <div class="flex items-center justify-between border-b border-dark-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="file-edit" class="w-4 h-4 text-teal-400"></i>
+                  <span>Criterion-Aligned Technical Proposal</span>
+                </h3>
+                <span class="text-[11px] text-slate-400 font-mono">Requires Human Approval</span>
+              </div>
+              <div id="proposalSectionsContainer" class="space-y-4">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Statutory Undertakings -->
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i>
+                <span>Generated Statutory Undertakings & Declarations</span>
+              </h3>
+              <div id="undertakingsContainer" class="space-y-3">
+                <!-- Dynamic -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 7: CORRIGENDA & DEADLINE INTELLIGENCE (Blueprint Page 9 & 18) -->
+      <section id="tab-corrigenda" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Deadline & Corrigendum Intelligence</h1>
+            <p class="text-xs text-slate-400">Automated amendment detection, date change tracking, and impact alerts on prepared bids.</p>
+          </div>
+          <button onclick="loadCorrigenda()" class="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs text-slate-300 flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Scan for New Corrigenda</span>
+          </button>
+        </div>
+
+        <div id="corrigendaCardsList" class="space-y-4">
+          <!-- Dynamic -->
+        </div>
+      </section>
+
+      <!-- SCREEN 8: AI AGENT & MCP ACTIVITY INSPECTOR (Blueprint Page 14) -->
+      <section id="tab-agent-activity" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <div class="flex items-center gap-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+              <span>Track 1 Core Demonstration</span>
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-tight mt-1">AI Agent & MCP Activity Inspector</h1>
+            <p class="text-xs text-slate-400">Live auditable trace of agents, MCP servers called, tools invoked, and human approvals.</p>
+          </div>
+          <button onclick="loadTraces()" class="px-3 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs text-slate-300 flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Refresh Traces</span>
+          </button>
+        </div>
+
+        <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-6 space-y-4">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="text-slate-400 border-b border-dark-800 text-[11px] uppercase font-sans">
+                <tr>
+                  <th class="py-2.5 px-3">Timestamp</th>
+                  <th class="py-2.5 px-3">Agent</th>
+                  <th class="py-2.5 px-3">MCP Server</th>
+                  <th class="py-2.5 px-3">Tool Invoked</th>
+                  <th class="py-2.5 px-3">Summary Result</th>
+                  <th class="py-2.5 px-3 text-right">Human Approval</th>
+                </tr>
+              </thead>
+              <tbody id="tracesTableBody" class="divide-y divide-dark-800 text-slate-300">
+                <!-- Dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 9: THE KILLER MOMENT AGENT CHAT (Blueprint Page 18 & 22) -->
+      <section id="tab-agent-chat" class="tab-panel space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-700/60 pb-5">
+          <div>
+            <div class="flex items-center gap-2 text-teal-400 text-xs font-semibold uppercase tracking-wider">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>The "Killer Moment" Experience</span>
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-tight mt-1">TenderMind Conversational Agent</h1>
+            <p class="text-xs text-slate-400">Ask natural language questions answered using verified tender clauses and company records.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Chat Window -->
+          <div class="lg:col-span-2 bg-dark-900 border border-dark-700/70 rounded-2xl flex flex-col h-[600px] overflow-hidden">
+            <!-- Messages area -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4">
+              <!-- Initial Welcome Message -->
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-dark-950 font-bold shrink-0">
+                  <i data-lucide="bot" class="w-5 h-5"></i>
+                </div>
+                <div class="bg-dark-800 border border-dark-700 p-4 rounded-2xl text-xs text-slate-200 space-y-2 max-w-xl">
+                  <p class="font-semibold text-white">Hello! I am your TenderMind Procurement Readiness Agent.</p>
+                  <p>I examine government tenders against your verified business credentials to answer exactly whether you qualify, what documents are missing, and how to prepare your bid.</p>
+                  <p class="text-slate-400 text-[11px]">Try asking one of the suggested prompts on the right, or type your own question.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input area -->
+            <div class="p-4 border-t border-dark-800 bg-dark-950/60 flex items-center gap-3">
+              <input type="text" id="chatInput" placeholder="Ask: 'Can my company apply for this tender? What is missing?'" class="flex-1 bg-dark-850 border border-dark-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-teal-400" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+              <button onclick="sendChatMessage()" class="px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-dark-950 font-bold text-xs flex items-center gap-2 transition shadow-md shadow-teal-500/20">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>Ask</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Suggested Prompts / Quick Testing -->
+          <div class="space-y-4">
+            <div class="bg-dark-900 border border-dark-700/70 rounded-2xl p-5 space-y-3">
+              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                <span>Quick Prompt Shortcuts</span>
+              </h3>
+              
+              <button onclick="triggerQuickPrompt('Can my company apply for this tender? What exactly is preventing us from being submission-ready?')" class="w-full text-left p-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 hover:border-teal-500/50 text-xs text-slate-200 transition space-y-1">
+                <p class="font-semibold text-teal-300">🎯 The Killer Question</p>
+                <p class="text-[11px] text-slate-400">"Can my company apply? What exactly is preventing us?"</p>
+              </button>
+
+              <button onclick="triggerQuickPrompt('What corrigenda or deadline changes have been published for this tender?')" class="w-full text-left p-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 hover:border-amber-500/50 text-xs text-slate-200 transition space-y-1">
+                <p class="font-semibold text-amber-300">⚠️ Corrigenda Impact</p>
+                <p class="text-[11px] text-slate-400">"What corrigenda or deadline changes have been published?"</p>
+              </button>
+
+              <button onclick="triggerQuickPrompt('Find government IT tenders for my company that close within the next 30 days.')" class="w-full text-left p-3 rounded-xl bg-dark-800 hover:bg-dark-750 border border-dark-700 hover:border-indigo-500/50 text-xs text-slate-200 transition space-y-1">
+                <p class="font-semibold text-indigo-300">🔍 Two-Way Discovery</p>
+                <p class="text-[11px] text-slate-400">"Find government IT tenders matching my company."</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
